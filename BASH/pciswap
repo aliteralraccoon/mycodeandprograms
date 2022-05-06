@@ -1,0 +1,85 @@
+#!/bin/bash
+
+echo "Would you Like to turn PCI Passthrough On or Off? On=1 Off=2"
+read pci
+
+if [ $pci == 1 ]
+then
+#Check if PCI is On Already
+  FILE=/home/aliteralraccoon/Documents/BAK/grub.TURNOFF
+  if [ -f "$FILE" ]
+  then
+    echo "PCI is already enabled silly! :0"
+    exit 0
+  else
+#Turn On PCI Passthrough
+    mv /etc/default/grub /home/aliteralraccoon/Documents/BAK/grub.TURNOFF
+    mv /home/aliteralraccoon/Documents/BAK/grub.TURNON /etc/default/grub
+    mv /etc/modprobe.d/vfio.conf /home/aliteralraccoon/Documents/BAK/vfio.conf.TURNOFF
+    mv /home/aliteralraccoon/Documents/BAK/vfio.conf.TURNON /etc/modprobe.d/vfio.conf
+    mv /etc/mkinitcpio.conf /home/aliteralraccoon/Documents/BAK/mkinitcpio.conf.TURNOFF
+    mv /home/aliteralraccoon/Documents/BAK/mkinitcpio.conf.TURNON /etc/mkinitcpio.conf
+    mv /etc/booster.yaml /home/aliteralraccoon/Documents/BAK/booster.yaml.TURNOFF
+    mv /home/aliteralraccoon/Documents/BAK/booster.yaml.TURNON /etc/booster.yaml
+    mv /etc/dracut.conf.d/10-vfio.conf /home/aliteralraccoon/Documents/BAK/10-vfio.conf.TURNOFF
+    mv /home/aliteralraccoon/Documents/BAK/10-vfio.conf.TURNON /etc/dracut.conf.d/10-vfio.conf
+    mv /usr/bin/vfio-pci-override.sh /home/aliteralraccoon/Documents/BAK/vfio-pci-override.sh.TURNOFF
+    mv /home/aliteralraccoon/Documents/BAK/vfio-pci-override.sh.TURNON /usr/bin/vfio-pci-override.sh
+    mkinitcpio -P
+    grub-mkconfig -o /boot/grub/grub.cfg
+    echo "Would you like to reboot the system to finalize the changes? y, n"
+    read changes
+      if [ $changes = y ]
+      then
+      reboot
+      elif [ $changes = n ]
+      then
+      echo "Make sure to reboot to finalize the changes!"
+      exit 0
+    else
+      echo "unknown input, reboot to make changes!"
+      exit 0
+    fi
+  fi
+elif [ $pci == 2 ]
+then
+#Check if PCI is Off Already
+  FILE=/home/aliteralraccoon/Documents/BAK/grub.TURNON
+  if [ -f "$FILE" ]
+  then
+    echo "PCI is already disabled silly! :0"
+    exit 0
+  else
+    #Turn Off PCI Passthrough
+    mv /etc/default/grub /home/aliteralraccoon/Documents/BAK/grub.TURNON
+    mv /home/aliteralraccoon/Documents/BAK/grub.TURNOFF /etc/default/grub
+    mv /etc/modprobe.d/vfio.conf /home/aliteralraccoon/Documents/BAK/vfio.conf.TURNON
+    mv /home/aliteralraccoon/Documents/BAK/vfio.conf.TURNOFF /etc/modprobe.d/vfio.conf
+    mv /etc/mkinitcpio.conf /home/aliteralraccoon/Documents/BAK/mkinitcpio.conf.TURNON
+    mv /home/aliteralraccoon/Documents/BAK/mkinitcpio.conf.TURNOFF /etc/mkinitcpio.conf
+    mv /etc/booster.yaml /home/aliteralraccoon/Documents/BAK/booster.yaml.TURNON
+    mv /home/aliteralraccoon/Documents/BAK/booster.yaml.TURNOFF /etc/booster.yaml
+    mv /etc/dracut.conf.d/10-vfio.conf /home/aliteralraccoon/Documents/BAK/10-vfio.conf.TURNON
+    mv /home/aliteralraccoon/Documents/BAK/10-vfio.conf.TURNOFF /etc/dracut.conf.d/10-vfio.conf
+    mv /usr/bin/vfio-pci-override.sh /home/aliteralraccoon/Documents/BAK/vfio-pci-override.sh.TURNON
+    mv /home/aliteralraccoon/Documents/BAK/vfio-pci-override.sh.TURNOFF /usr/bin/vfio-pci-override.sh
+    mkinitcpio -P
+    grub-mkconfig -o /boot/grub/grub.cfg
+    echo "Would you like to reboot the system to finalize the changes? y, n"
+    read changes
+    if [ $changes = y ]
+    then
+      reboot
+    elif [ $changes = n ]
+    then
+      echo "Make sure to reboot to finalize the changes!"
+      exit 0
+    else
+      echo "unknown input, reboot to make changes!"
+      exit 0
+    fi
+  fi
+else
+  echo "Unknown input, exiting script!"
+  exit 0
+fi
